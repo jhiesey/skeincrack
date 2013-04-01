@@ -14,7 +14,7 @@
 
 #define BUF_SIZE 128
 #define HASH_BITS 1024
-static const int HASHES_BEFORE_BENCHMARK = 10000;
+static const int HASHES_BEFORE_BENCHMARK = 1000000;
 
 static const char *param = "hashable=";
 
@@ -116,17 +116,18 @@ void *hashThread(void *aux) {
     unsigned char hash[HASH_BITS / CHAR_BIT];
     Hash(HASH_BITS, buf, BUF_SIZE * CHAR_BIT, hash);
 
-    numHashes++;
-    if(benchmarkMode && numHashes == HASHES_BEFORE_BENCHMARK) {
-      struct timeval timestamp;
-      gettimeofday(&timestamp, NULL);
+    if(threadNum == 0 && benchmarkMode) {
+      numHashes++;
+      if(numHashes % HASHES_BEFORE_BENCHMARK == 0) {
+        struct timeval timestamp;
+        gettimeofday(&timestamp, NULL);
 
-      double sec = (timestamp.tv_sec - startTimestamp.tv_sec) +
-                   (timestamp.tv_usec - startTimestamp.tv_usec) / 1000000.0;
-      printf("Thread %d: %0.f hashes/sec (%d hashes in %.5fs)\n",
-             threadNum, HASHES_BEFORE_BENCHMARK / sec,
-             HASHES_BEFORE_BENCHMARK, sec);
-      return;
+        double sec = (timestamp.tv_sec - startTimestamp.tv_sec) +
+                     (timestamp.tv_usec - startTimestamp.tv_usec) / 1000000.0;
+        printf("Thread 0: %0.f hashes/sec (%d hashes in %.5fs)\n",
+               numHashes / sec,
+               numHashes, sec);
+      }
     }
 
     int distance = hammingDistance(target, hash, HASH_BITS/8);
