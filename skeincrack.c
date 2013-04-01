@@ -134,14 +134,16 @@ void *hashThread(void *aux) {
     if (!benchmarkMode && distance < threadBest) {
       threadBest = distance;
 
+      pthread_mutex_lock(&bestLock);
+
       // check if this is actually the best over all threads
       if(threadBest >= best) {
         threadBest = best;
+        pthread_mutex_unlock(&bestLock);
         continue;
       }
-      // If here, this thread actually has the best hash
-      pthread_mutex_lock(&bestLock);
 
+      // If here, this thread actually has the best hash
       printf("\n\nDistance: %d\n", distance);
       best = distance;
 
