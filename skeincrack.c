@@ -30,7 +30,7 @@ static inline int hammingDistance(const unsigned char *hash1,
                                   size_t len) {
   const uint32_t *x = (const uint32_t*) hash1;
   const uint32_t *y = (const uint32_t*) hash2;
-  len /= 4;
+  len /= sizeof(uint32_t);
 
   int total = 0;
   while (len-- > 0)
@@ -113,13 +113,12 @@ void *hashThread(void *aux) {
       threadBest = distance;
 
       // check if this is actually the best over all threads
-      pthread_mutex_lock(&bestLock);
       if(threadBest >= best) {
         threadBest = best;
-        pthread_mutex_unlock(&bestLock);
         continue;
       }
       // If here, this thread actually has the best hash
+      pthread_mutex_lock(&bestLock);
 
       printf("\n\nDistance: %d\n", distance);
       best = distance;

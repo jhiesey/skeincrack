@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -O3 -Wall -ICD/Optimized_64bit --std=c99 -lpthread -fno-strict-aliasing
+CFLAGS = -O3 -Wall -ICD/Optimized_64bit --std=c99 -pthread -fno-strict-aliasing
 
 all: skeincrack
 
